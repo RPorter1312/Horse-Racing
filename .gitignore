@@ -1,0 +1,8 @@
+.venv/
+artifacts/
+notebooks/
+data/
+.vscode/
+simulations/
+__pycache__/
+racingmodel/eda_nb.ipynb

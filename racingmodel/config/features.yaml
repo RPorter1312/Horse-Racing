@@ -1,0 +1,25 @@
+non_training_features:
+  - course
+  - race_id
+  - off
+  - race_name
+  - sex_rest
+  - num
+  - pos
+  - draw
+  - horse
+  - ovr_btn
+  - btn
+  - wgt
+  - hg
+  - time
+  - sp
+  - jockey
+  - trainer
+  - prize
+  - ts
+  - sire
+  - dam
+  - damsire
+  - owner
+  - comment
