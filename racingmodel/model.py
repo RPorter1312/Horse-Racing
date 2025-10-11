@@ -155,7 +155,7 @@ class RacingPredictor:
             windows=self.horse_windows
         )
 
-        data.drop(columns=self.excluded_features, inplace=True)
+        data.drop(columns=self.excluded_features, inplace=True, errors='ignore')
 
         # Need to drop calculated columns that were used for historical trends
         data.drop(columns=[
