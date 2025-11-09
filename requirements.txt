@@ -7,5 +7,6 @@ lightgbm==4.6.0
 optuna==4.4.0
 shap==0.48.0
 PyYAML==6.0.2
-psycopg2==2.9.11
+psycopg2-binary==2.9.11
+libq==0.5.0
 yamlcore==0.0.4
