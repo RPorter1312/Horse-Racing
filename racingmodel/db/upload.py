@@ -42,7 +42,7 @@ if __name__ == "__main__":
             sql = f.read()
             upload_csv_to_pg(engine=engine, file=args.file, sql=sql)
 
-        logging.info("History updated successfully.")
+        logging.info("History updated successfully")
     elif args.type == "racecards":
         logging.info("Uploading latest racecards data to database...")
 
@@ -51,4 +51,4 @@ if __name__ == "__main__":
             racecards_parsed = parse_racecards(racecards_raw)
             upload_df_to_pg(engine=engine, df=racecards_parsed, if_exists='replace')
         
-        logging.info("Racecards uploaded successfully.")
+        logging.info("Racecards uploaded successfully")
