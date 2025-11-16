@@ -33,7 +33,7 @@ CREATE TABLE racing_history (
     jockey TEXT NOT NULL,
     trainer TEXT NOT NULL,
     prize NUMERIC,
-    offr TEXT,
+    ofr TEXT,
     rpr TEXT,
     ts TEXT,
     sire_id INTEGER,

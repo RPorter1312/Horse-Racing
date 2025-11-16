@@ -32,7 +32,7 @@ COPY "racing_history" (
     jockey,
     trainer,
     prize,
-    offr,
+    ofr,
     rpr,
     ts,
     sire_id,
