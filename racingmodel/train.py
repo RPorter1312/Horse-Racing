@@ -1,8 +1,11 @@
 from model import RacingPredictor
+from .db.dbutils import import_pg_to_df
 
+import sqlalchemy
 import logging
 import argparse
 import joblib
+import os
 import yaml
 from yamlcore import CoreLoader
 from pathlib import Path
@@ -14,6 +17,16 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
     root_dir = Path(__file__).parents[1]
+
+    env_vars = {
+        "user": os.environ.get("hruser"),
+        "pass": os.environ.get("hrpass"),
+        "db_name": os.environ.get("hrdatabase"),
+    }
+
+    engine = sqlalchemy.create_engine(
+        f"postgresql+psycopg2://{env_vars['user']}:{env_vars['pass']}@localhost/{env_vars['db_name']}"
+    )
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-r', '--race_type', type=str, 
@@ -43,9 +56,10 @@ if __name__ == '__main__':
 
     logging.info(f"Now training model for race_type: {race_type} and target: {target}")
 
-    data = pd.read_csv(Path(root_dir, 'data', 'raceform.csv'))
+    data = import_pg_to_df(engine=engine, table_name="racing_history")
+    data = data[(data['date'] >= train_start_date) and (data['date'] <= test_end_date)]
 
-    logging.info("Data has been read in")
+    logging.info(f"Training data between {train_start_date} and {test_end_date} imported")
 
     racing_model = RacingPredictor(
         target=target,
