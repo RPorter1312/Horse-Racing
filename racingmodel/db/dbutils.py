@@ -4,6 +4,7 @@ import logging
 import os
 import argparse
 from pathlib import Path
+from typing import Literal
 
 logging.getLogger(__name__)
 
@@ -26,8 +27,20 @@ def upload_csv_to_pg(engine: sqlalchemy.Engine, csv_file_path: str | os.PathLike
         conn.commit()
 
 
-def upload_df_to_pg(engine: sqlalchemy.Engine, df: pd.DataFrame, table_name: str):
-    df.to_sql(table_name, engine, if_exists='replace')
+def upload_df_to_pg(
+        engine: sqlalchemy.Engine,
+        df: pd.DataFrame,
+        table_name: str,
+        if_exists: Literal["fail", "replace", "append"]='fail'
+    ):
+    with engine.connection() as conn:
+        df.to_sql(name=table_name, con=conn, if_exists=if_exists)
+
+
+def import_pg_to_df(engine: sqlalchemy.engine, table_name: str) -> pd.DataFrame:
+    with engine.connection() as conn:
+        return pd.read_sql_table(table_name=table_name, con=conn)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
