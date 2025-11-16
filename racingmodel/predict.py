@@ -1,8 +1,5 @@
 from model import RacingPredictor
-from db.dbutils import (
-    upload_df_to_pg,
-    import_pg_to_df
-)
+from db.dbutils import upload_df_to_pg, import_pg_to_df
 
 import numpy as np
 import pandas as pd
@@ -16,7 +13,7 @@ from pathlib import Path
 logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     root_dir = Path(__file__).parents[1]
 
     env_vars = {
@@ -30,7 +27,7 @@ if __name__ == '__main__':
     )
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--model', type=str, required=True)
+    parser.add_argument("-m", "--model", type=str, required=True)
     args = parser.parse_args()
 
     model = RacingPredictor.load(args.model)
@@ -55,13 +52,13 @@ if __name__ == '__main__':
     upload_df_to_pg(
         engine=engine,
         df=predictions,
-        table_name='latest_predictions',
-        if_exists='replace'
+        table_name="latest_predictions",
+        if_exists="replace",
     )
 
     upload_df_to_pg(
         engine=engine,
         df=predictions,
-        table_name='prediction_history',
-        if_exists='append'
+        table_name="prediction_history",
+        if_exists="append",
     )

@@ -4,13 +4,11 @@ import os
 
 from .processing import dist_to_furlongs
 
-def parse_racecards(
-        json_file: str | os.PathLike,
-        regions: list[str]
-    ) -> pd.DataFrame:
+
+def parse_racecards(json_file: str | os.PathLike, regions: list[str]) -> pd.DataFrame:
     with open(json_file) as f:
         racecards = json.load(f)
-    
+
     races = []
 
     for region in regions:
@@ -32,12 +30,13 @@ def parse_racecards(
                         "race_class",
                         "age_band",
                         "rating_band",
-                        "prize"
-                    ]
+                        "prize",
+                    ],
                 )
                 races.append(race)
-    
+
     return pd.concat(races)
+
 
 def prep_racecard_data(data: pd.DataFrame) -> pd.DataFrame:
     data = data.copy()
@@ -70,17 +69,12 @@ def prep_racecard_data(data: pd.DataFrame) -> pd.DataFrame:
             "trainer_14_days.runs",
             "trainer_14_days.wins",
             "trainer_14_days.percent",
-            "medical"
+            "medical",
         ]
     )
 
     # Drop all stats columns in one line
-    data_dropped = data_dropped.drop(
-        data_dropped.filter(
-            regex="stats"
-        ).columns,
-        axis=1
-    )
+    data_dropped = data_dropped.drop(data_dropped.filter(regex="stats").columns, axis=1)
 
     data_renamed = data_dropped.rename(
         columns={
@@ -90,12 +84,10 @@ def prep_racecard_data(data: pd.DataFrame) -> pd.DataFrame:
             "race_class": "class",
             "name": "horse",
             "off_time": "off",
-            "number": "num"
+            "number": "num",
         }
     )
 
-    data_renamed['dist_f'] = data_renamed['dist'].apply(
-        lambda x: dist_to_furlongs(x)
-    )
+    data_renamed["dist_f"] = data_renamed["dist"].apply(lambda x: dist_to_furlongs(x))
 
     return data_renamed

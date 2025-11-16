@@ -49,6 +49,6 @@ if __name__ == "__main__":
         with open(args.file) as f:
             racecards_raw = json.load(f)
             racecards_parsed = parse_racecards(racecards_raw)
-            upload_df_to_pg(engine=engine, df=racecards_parsed, if_exists='replace')
-        
+            upload_df_to_pg(engine=engine, df=racecards_parsed, if_exists="replace")
+
         logging.info("Racecards uploaded successfully")
