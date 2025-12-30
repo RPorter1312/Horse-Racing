@@ -26,16 +26,15 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-t", "--type", type=str, choices=["history, racecards"], required=True
+        "-t", "--type", type=str, choices=["history", "racecards"], required=True
     )
     parser.add_argument("-f", "--file", type=str, required=True)
     args = parser.parse_args()
 
-    racing_hist_imp_sql_path = Path(
-        root_dir, "racingmodel", "db", "sql", "racing_history_csv_import.sql"
-    )
-
     if args.type == "history":
+        racing_hist_imp_sql_path = Path(
+            root_dir, "racingmodel", "db", "sql", "racing_history_csv_import.sql"
+        )
         logging.info("Uploading race history data to database...")
 
         with open(racing_hist_imp_sql_path) as f:
@@ -46,9 +45,7 @@ if __name__ == "__main__":
     elif args.type == "racecards":
         logging.info("Uploading latest racecards data to database...")
 
-        with open(args.file) as f:
-            racecards_raw = json.load(f)
-            racecards_parsed = parse_racecards(racecards_raw)
-            upload_df_to_pg(engine=engine, df=racecards_parsed, if_exists="replace")
+        racecards_parsed = parse_racecards(json_file=args.file, regions=["GB", "IRE"])
+        upload_df_to_pg(engine=engine, df=racecards_parsed, table_name="latest_racecards", if_exists="replace")
 
         logging.info("Racecards uploaded successfully")
