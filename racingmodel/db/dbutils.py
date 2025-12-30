@@ -19,10 +19,18 @@ def upload_df_to_pg(
         table_name: str,
         if_exists: Literal["fail", "replace", "append"]='fail'
     ):
-    with engine.connection() as conn:
+    with engine.connect() as conn:
         df.to_sql(name=table_name, con=conn, if_exists=if_exists)
 
 
 def import_pg_to_df(engine: sqlalchemy.engine, table_name: str) -> pd.DataFrame:
-    with engine.connection() as conn:
+    with engine.connect() as conn:
         return pd.read_sql_table(table_name=table_name, con=conn)
+    
+
+def get_max_hist_date(engine: sqlalchemy.engine) -> str:
+    conn = engine.raw_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT MAX(date) FROM racing_history")
+    
+    return cur.fetchone()[0].strftime('%Y-%m-%d')
