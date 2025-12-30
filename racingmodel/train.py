@@ -1,4 +1,4 @@
-from model import RacingPredictor
+from .model import RacingPredictor
 from .db.dbutils import import_pg_to_df
 
 import sqlalchemy

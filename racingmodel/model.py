@@ -1,4 +1,4 @@
-import utils.processing as proc
+from .utils import processing as proc
 
 import os
 import joblib

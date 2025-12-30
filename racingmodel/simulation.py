@@ -1,5 +1,5 @@
-from model import RacingPredictor
-from utils.betting import get_decimal_odds, calculate_ev, evaluate_bet_type, kelly_bet
+from .model import RacingPredictor
+from .utils.betting import get_decimal_odds, calculate_ev, evaluate_bet_type, kelly_bet
 
 import numpy as np
 import pandas as pd
