@@ -4,6 +4,7 @@ import os
 
 from .processing import dist_to_furlongs
 
+
 def prep_racecard_data(data: pd.DataFrame) -> pd.DataFrame:
     data = data.copy()
 
@@ -56,7 +57,13 @@ def prep_racecard_data(data: pd.DataFrame) -> pd.DataFrame:
 
     data_renamed["dist_f"] = data_renamed["dist"].apply(lambda x: dist_to_furlongs(x))
 
+    # Need to remove any currency symbols and commas from prize column
+    data_renamed["prize"] = (
+        data_renamed["prize"].str.replace(r'[^0-9]+', '', regex=True)
+    )
+
     return data_renamed
+
 
 def parse_racecards(json_file: str | os.PathLike, regions: list[str]) -> pd.DataFrame:
     with open(json_file) as f:
