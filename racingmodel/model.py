@@ -57,7 +57,7 @@ class RacingPredictor:
         data = self._apply_base_transforms(df=data, dist_bins=self.dist_bins)
 
         # Fixing some incorrectly classified race types
-        data.loc[(data["dist_furlongs"] > 22) & (data["type"] == "Flat"), "type"] = (
+        data.loc[(data["dist_f"] > 22) & (data["type"] == "Flat"), "type"] = (
             "Chase"
         )
 
@@ -257,10 +257,8 @@ class RacingPredictor:
     ) -> pd.DataFrame:
         df = df.copy()
         df["time_seconds"] = df["time"].map(proc.time_to_seconds)
-        df["wgt_lbs"] = df["wgt"].map(proc.st_to_lbs)
-        df["dist_furlongs"] = df["dist"].map(proc.dist_to_furlongs)
         df["dist_bins"] = pd.cut(
-            df["dist_furlongs"], bins=dist_bins, include_lowest=True
+            df["dist_f"], bins=dist_bins, include_lowest=True
         )
         # Need to make new bin categories JSON-safe for LGBM
         # (will raise 'Circular reference' ValueError in fit method else)
@@ -269,7 +267,7 @@ class RacingPredictor:
         df["flat_or_jumps"] = df["type"].apply(
             lambda x: "Flat" if x == "Flat" else "Jumps"
         )
-        df["speed"] = df["dist_furlongs"] / df["time_seconds"]
+        df["speed"] = df["dist_f"] / df["time_seconds"]
 
         return df
 
