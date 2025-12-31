@@ -89,7 +89,7 @@ class RacingPredictor:
 
         data = proc.get_field_strength(
             df=data,
-            rating_col="or",
+            rating_col="ofr",
             windows=self.horse_windows,
             include_lifetime=self.include_lifetime,
         )
@@ -257,6 +257,7 @@ class RacingPredictor:
     ) -> pd.DataFrame:
         df = df.copy()
         df["time_seconds"] = df["time"].map(proc.time_to_seconds)
+        df["dist_f"] = df["dist_f"].str.replace("f", "").astype(float)
         df["dist_bins"] = pd.cut(
             df["dist_f"], bins=dist_bins, include_lowest=True
         )
