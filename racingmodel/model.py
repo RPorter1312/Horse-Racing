@@ -1,5 +1,6 @@
 from .utils import processing as proc
 
+import logging
 import os
 import joblib
 import numpy as np
@@ -14,6 +15,9 @@ from sklearn.model_selection import (
 from sklearn.frozen import FrozenEstimator
 from sklearn.metrics import make_scorer, log_loss, brier_score_loss
 from sklearn.calibration import CalibratedClassifierCV, CalibrationDisplay
+
+logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 class RacingPredictor:
@@ -56,10 +60,10 @@ class RacingPredictor:
 
         data = self._apply_base_transforms(df=data, dist_bins=self.dist_bins)
 
+        logging.info("Base transforms applied")
+
         # Fixing some incorrectly classified race types
-        data.loc[(data["dist_f"] > 22) & (data["type"] == "Flat"), "type"] = (
-            "Chase"
-        )
+        data.loc[(data["dist_f"] > 22) & (data["type"] == "Flat"), "type"] = "Chase"
 
         if self.race_type == "all":
             pass
@@ -70,8 +74,12 @@ class RacingPredictor:
 
         data.sort_values(["horse", "date"], inplace=True)
 
+        logging.info("Data sorted by horse and date")
+
         data = proc.get_run_num(data)
         data = proc.get_is_first_race_flag(data)
+
+        logging.info("Calculated run number")
 
         data["ovr_btn"] = pd.to_numeric(data["ovr_btn"].replace("-", np.nan))
         data["btn"] = pd.to_numeric(data["ovr_btn"].replace("-", np.nan))
@@ -85,6 +93,8 @@ class RacingPredictor:
             compute_trend=True,
         )
 
+        logging.info("Calculated momentum features")
+
         data = proc.get_speed_vs_avg(df=data, windows=self.horse_windows)
 
         data = proc.get_field_strength(
@@ -94,8 +104,12 @@ class RacingPredictor:
             include_lifetime=self.include_lifetime,
         )
 
+        logging.info("Calculated field strength")
+
         data = proc.get_days_since_last_race(data)
         data = proc.get_races_in_last_n_days(df=data, windows=self.date_windows)
+
+        logging.info("Calculated previous race counts")
 
         data["hg_grp"] = proc.group_by_threshold(df=data, var="hg", threshold=0.1)
 
@@ -104,6 +118,7 @@ class RacingPredictor:
 
         data["win"] = data["pos"].apply(lambda x: 1 if x == "1" else 0)
         data["place"] = data.apply(lambda x: proc.is_placed(x["pos"], x["ran"]), axis=1)
+
 
         for category, windows in zip(
             ["horse", "jockey", "trainer"],
@@ -123,6 +138,9 @@ class RacingPredictor:
                 result_vars=["win", "place"],
                 comparison_vars=["going", "dist_bins"],
             )
+
+            logging.info(f"Calculated win rates for '{category}'")
+
 
         data = proc.get_non_finishes(
             df=data, var="pos", non_fins=["F", "PU", "UR"], windows=self.horse_windows
@@ -258,9 +276,7 @@ class RacingPredictor:
         df = df.copy()
         df["time_seconds"] = df["time"].map(proc.time_to_seconds)
         df["dist_f"] = df["dist_f"].str.replace("f", "").astype(float)
-        df["dist_bins"] = pd.cut(
-            df["dist_f"], bins=dist_bins, include_lowest=True
-        )
+        df["dist_bins"] = pd.cut(df["dist_f"], bins=dist_bins, include_lowest=True)
         # Need to make new bin categories JSON-safe for LGBM
         # (will raise 'Circular reference' ValueError in fit method else)
         df["dist_bins"] = df["dist_bins"].astype(str).astype("category")
