@@ -39,10 +39,6 @@ if __name__ == "__main__":
 
     df_hist = import_pg_to_df(engine=engine, table_name="racing_history")
 
-    # Use a smaller daatset for testing
-
-    df_hist = df_hist[df_hist["date"] >= '2025-09-01']
-
     df_rc = import_pg_to_df(engine=engine, table_name="latest_racecards")
 
     # Check if 'racing_history' table is up to date
