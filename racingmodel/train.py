@@ -87,11 +87,9 @@ if __name__ == "__main__":
     logging.info(f"Now training model for race_type: {race_type} and target: {target}")
 
     data = import_pg_to_df(engine=engine, table_name="racing_history")
-    data = data[(data["date"] >= train_start_date) and (data["date"] <= test_end_date)]
+    data = data.drop(columns=["entry_id"]) # Drop index column
 
-    logging.info(
-        f"Training data between {train_start_date} and {test_end_date} imported"
-    )
+    logging.info("Training data imported")
 
     racing_model = RacingPredictor(
         target=target,
@@ -108,12 +106,16 @@ if __name__ == "__main__":
         include_lifetime=True,
     )
 
-    data = racing_model.preprocess(
+    data_proc = racing_model.preprocess(
         data=data,
     )
 
+    data_proc = data_proc[
+        (data_proc["date"] >= train_start_date) & (data_proc["date"] <= test_end_date)
+    ]
+
     logging.info(
-        f"Data has been preprocessed. Rows: {data.shape[0]}, Columns: {data.shape[1]}"
+        f"Data has been preprocessed. Rows: {data_proc.shape[0]}, Columns: {data_proc.shape[1]}"
     )
 
     if args.save:
@@ -131,7 +133,7 @@ if __name__ == "__main__":
         logging.info("Preprocessed data has been saved as a python object")
 
     X_train, X_test, y_train, y_test = racing_model.split_data(
-        data=data, apply_train_test_split=True
+        data=data_proc, apply_train_test_split=True
     )
 
     racing_model.fit(X=X_train, y=y_train, train=True, calibrate=True, tune=False)
