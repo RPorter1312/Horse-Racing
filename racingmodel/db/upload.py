@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
         with open(racing_hist_imp_sql_path) as f:
             sql = f.read()
-            upload_csv_to_pg(engine=engine, file=args.file, sql=sql)
+            upload_csv_to_pg(engine=engine, csv_file_path=args.file, sql=sql)
 
         logging.info("History updated successfully")
     elif args.type == "racecards":
