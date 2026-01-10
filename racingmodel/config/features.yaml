@@ -17,7 +17,6 @@ non_training_features:
   - jockey
   - trainer
   - prize
-  - ts
   - sire
   - dam
   - damsire
