@@ -40,6 +40,7 @@ if __name__ == "__main__":
     df_hist = import_pg_to_df(engine=engine, table_name="racing_history")
 
     df_rc = import_pg_to_df(engine=engine, table_name="latest_racecards")
+    df_rc = df_rc.sort_values(by=["horse", "date"])
 
     # Check if 'racing_history' table is up to date
     current_date = datetime.today().strftime("%Y-%m-%d")
@@ -72,7 +73,7 @@ if __name__ == "__main__":
     win_predictions = win_model.predict(df_rc_processed)
     place_predictions = place_model.predict(df_rc_processed)
 
-    all_predictions = pd.concat([win_predictions, place_predictions], axis=1)
+    all_predictions = pd.concat([df_rc[["horse", "course", "date", "off"]], win_predictions, place_predictions], axis=1)
 
     for table, update_method in zip(
         ("latest_predictions", "prediction_history"), ("replace", "append")
