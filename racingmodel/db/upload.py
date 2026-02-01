@@ -5,7 +5,6 @@ import sqlalchemy
 import os
 import argparse
 import logging
-import json
 from pathlib import Path
 
 logging.getLogger(__name__)
